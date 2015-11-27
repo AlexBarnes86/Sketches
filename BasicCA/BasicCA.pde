@@ -1,6 +1,10 @@
-int caSize = 500;
-boolean [] current;
+import java.util.List;
+import java.util.ArrayList;
+
+int caSize = 250;
 boolean [] lookup;
+int step = 0;
+List<List<Boolean>> rows = new ArrayList<List<Boolean>>(caSize);
 
 String to01(boolean bool) {
   return bool ? "1" : "0";
@@ -24,55 +28,69 @@ boolean compute(boolean left, boolean center, boolean right) {
   return lookup[index];
 }
 
-int step = 0;
-
 void setup() {
   size(500, 500);
   frameRate(60);
   noStroke();
   fill(0);
   background(255);
-  
-  resetCA(30);
+  resetCA(30, false);
 }
 
 void draw() {
+  background(255);
   float blockSize = width * 1.0 / caSize;
-  if(step * blockSize >= height) {
-    step = 0;
-    background(255);
-  }
-  translate(0, step * blockSize);
-  step++;
-  for(int i = 0; i < caSize; ++i) {
-    if(current[i]) {
-      rect(i*blockSize, 0, blockSize, blockSize);
+  List<Boolean> curRow = null;
+  for(int r = 0; r < rows.size(); ++r) {
+    curRow = rows.get(r);
+    for(int c = 0; c < curRow.size(); ++c) {
+      if(curRow.get(c)) {
+        rect(c*blockSize, r*blockSize, blockSize, blockSize);
+      }
     }
   }
   
-  current = generate(current);
+  rows.add(generate(curRow));
+  if(rows.size() > caSize) {
+    rows.remove(0);
+  }
+
+  step++;
 }
 
-void resetCA(int ruleNum) {
+void resetCA(int ruleNum, boolean randAssign) {
+  rows = new ArrayList<List<Boolean>>(caSize);
   lookup = ruleNumberTranslate(ruleNum);
   step = 0;
-  current = new boolean[caSize];
-  current[caSize/2] = true;
+  List<Boolean> current = new ArrayList<Boolean>(caSize);
+  
+  if(randAssign) {
+    for(int i = 0; i < caSize; ++i) {
+      current.add(new Boolean(random(0, 2) >= 1));
+    }
+  }
+  else {
+    for(int i = 0; i < caSize; ++i) {
+      current.add(new Boolean(i == caSize/2));
+    }
+  }
+  rows.add(current);
 }
 
-boolean [] generate(boolean[] current) {
-  boolean [] next = new boolean[current.length];
-  next[0] = next[next.length - 1] = false;
-  for(int i = 1; i < current.length - 1; ++i) {
-    next[i] = compute(current[i - 1], current[i], current[i+1]);
+List<Boolean> generate(List<Boolean> current) {
+  List<Boolean> next = new ArrayList<Boolean>(current.size());
+  next.add(false);
+  for(int i = 1; i < current.size() - 1; ++i) {
+    next.add(compute(current.get(i - 1), current.get(i), current.get(i+1)));
     //println(to01(current[i-1]) + to01(current[i]) + to01(current[i+1]) + " => " + to01(next[i]));
   }
+  next.add(false);
   return next;
 }
 
 void mousePressed() {
   int ruleNum = (int)random(0, 256);
   println(ruleNum);
-  resetCA(ruleNum);
+  resetCA(ruleNum, mouseButton == RIGHT);
   background(255);
 }

@@ -1,7 +1,7 @@
 float x = 0, y = 0;
 int radiusX = 50, radiusY = 100;
 float angleX = 100, angleY = 0;
-float speedX = 0.05;
+float speedX = 0.065;
 float speedY = 0.04;
 float dx = 0, dy = 0;
 float angle = 0;

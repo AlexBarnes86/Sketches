@@ -8,12 +8,12 @@ void branch(float len) {
   
   if(len >= 2) {
     pushMatrix();
-    rotate(theta);
+    rotate(theta+noise(frameCount/1000.0));
     branch(len);
     popMatrix();
     
     pushMatrix();
-    rotate(-theta);
+    rotate(-theta-noise((frameCount+100)/1000.0));
     branch(len);
     popMatrix();
   }
