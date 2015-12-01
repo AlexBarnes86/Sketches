@@ -5,6 +5,7 @@ import g4p_controls.*;
 int NPOINTS = 10000;
 int DEPTH = 20;
 float SCALE = 1.0;
+boolean record = false;
 
 class ChaosFunction {
   public float a, b, c, d, e, f;
@@ -197,6 +198,9 @@ void setup() {
 void draw() {
   background(255);
   game.draw(NPOINTS, DEPTH);
+  if(record) {
+    saveFrame("renders/chaos#####.tif");
+  }
 }
 
 void keyPressed() {
@@ -242,6 +246,9 @@ void keyPressed() {
   else if(key == 'S') {
     SCALE -= 0.01;
     println("Scale: " + SCALE);
+  }
+  else if(key == 'r') {
+    record = !record;
   }
   else {
     println("Unrecognized key pressed: " + key);
