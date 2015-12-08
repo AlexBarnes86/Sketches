@@ -20,13 +20,17 @@ class Metaball {
   private PVector position;
   private PVector velocity;
   private PVector acceleration;
-  private float radius;
-  
+  private float radius = 0;
+  private float maxRadius;
+  private float rVel;
+
   public Metaball randomize() {
-      position = new PVector(.45+random(.1), .45 + random(.1));
-      velocity = new PVector(random(.02)-.01, random(.02)-.01);
+      position = new PVector(.40+random(.1), .40 + random(.1));
+      velocity = new PVector(random(.002)-.001, random(.002)-.001);
       acceleration = new PVector(random(.0002)-.0001, random(.0002)-.0001);
-      radius = random(.05) + .02;
+      maxRadius = random(.10) + .05;
+      radius = 0;
+      rVel = random(0.001);
       colour = color((int)random(255), (int)random(255), (int)random(255));
       return this;
   }
@@ -65,6 +69,9 @@ class Metaball {
   void update() {
     this.velocity.add(acceleration);
     this.position.add(velocity);
+    if(radius < maxRadius) {
+      radius += rVel;
+    }
   }
   
   color getColor() {
@@ -113,7 +120,7 @@ class MetaballSimulation {
   public void update() {
     for(Metaball ball : balls) {
       ball.update();
-      if(ball.outOfBounds(0, 0, 1, 1)) {
+      if(ball.outOfBounds(-2, -2, 2, 2)) {
         ball.randomize();
       }
     }
@@ -122,6 +129,8 @@ class MetaballSimulation {
 
 final int NUM_METABALLS = 5;
 MetaballSimulation sim = null;
+boolean recording = false;
+final String RECORD_PATH = "renders/metaballs2d######.gif";
 
 void setup() {
   size(500, 500);
@@ -134,4 +143,13 @@ void draw() {
   sim.draw(pixels, width, height);
   updatePixels();
   sim.update();
+  if(recording) {
+    saveFrame(RECORD_PATH);
+  }
+}
+
+void keyPressed() {
+  if(key == 'r') {
+    recording = !recording;
+  }
 }
